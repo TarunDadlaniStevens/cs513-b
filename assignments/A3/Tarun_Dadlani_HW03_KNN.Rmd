@@ -1,0 +1,62 @@
+---
+title: "Tarun_Dadlani_HW03_KNN"
+author: "Tarun Dadlani"
+date: "2023-10-10"
+output: pdf_document
+---
+
+```{r}
+# Load necessary libraries
+library(class)
+
+# Load the breast cancer dataset (replace 'dataset.csv' with your dataset's actual filename)
+data <- read.csv("breast-cancer-wisconsin.csv")
+
+# Convert features to factor data type
+data$Class <- as.factor(data$Class)
+
+# Remove rows with missing values
+data <- na.omit(data)
+
+```
+
+```{r}
+# Split the data into training (70%) and test (30%) sets
+set.seed(123) # for reproducibility
+sample_indices <- sample(nrow(data), 0.7 * nrow(data))
+train_data <- data[sample_indices, ]
+test_data <- data[-sample_indices, ]
+print(na.omit(train_data))
+```
+
+```{r}
+# Create a function to train and evaluate KNN models
+knn_model <- function(k, train_data, test_data) {
+  # Train the KNN model
+  model <- knn(train_data[, -c(2, 10)], test_data[, -c(2, 10)], train_data$Class, k)
+  
+  # Predict on the test data
+  predictions <- as.factor(model)
+  
+  # Evaluate the model (e.g., using confusion matrix and accuracy)
+  confusion_matrix <- table(Actual = test_data$Class, Predicted = predictions)
+  accuracy <- sum(diag(confusion_matrix)) / sum(confusion_matrix)
+  
+  return(list(ConfusionMatrix = confusion_matrix, Accuracy = accuracy))
+}
+
+```
+
+```{r}
+# Train and evaluate KNN models with k = 3, 5, and 10
+k_values <- c(3, 5, 10)
+results <- lapply(k_values, function(k) knn_model(k, train_data, test_data))
+
+# Display the results
+for (i in 1:length(k_values)) {
+  cat("K =", k_values[i], "\n")
+  cat("Confusion Matrix:\n", results[[i]]$ConfusionMatrix, "\n")
+  cat("Accuracy:", results[[i]]$Accuracy, "\n\n")
+}
+
+```

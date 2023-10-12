@@ -1,0 +1,93 @@
+---
+title: "Tarun_Dadlani_HW02_EDA"
+author: "Tarun Dadlani"
+date: "2023-10-05"
+CWID: "20010209"
+output: pdf_document
+---
+
+```{r}
+library(dplyr)
+library(ggplot2)
+
+# Loading the data
+cancer_data_df <- read.csv('breast-cancer-wisconsin.csv', header = TRUE)
+
+# Viewing the data
+head(cancer_data_df)
+
+```
+
+```{r}
+
+# Summarizing data
+summary(cancer_data_df)
+```
+
+```{r}
+# Checking NaN/null values
+cancer_data_df[cancer_data_df == "?"] <- NA
+colSums(is.na(cancer_data_df))
+```
+
+```{r}
+# Finding mean of the columns with null values
+cancer_data_df$F6 <- as.numeric(cancer_data_df$F6)
+F6_MEAN <- mean(cancer_data_df$F6, na.rm = TRUE)
+
+# Replacing with mean
+cancer_data_df$F6[is.na(cancer_data_df$F6)] <- F6_MEAN
+cancer_data_df$F6 <- as.integer(cancer_data_df$F6)
+colSums(is.na(cancer_data_df))
+```
+
+```{r}
+# Displaying the frequency of 'Class' vs 'F6'
+table(cancer_data_df$Class)
+
+# Displaying the frequency of 'class' vs 'F6'
+table(cancer_data_df$F6)
+
+# Crosstabulation of 'Class' vs 'F6'
+table(cancer_data_df$Class, cancer_data_df$F6)
+
+```
+
+```{r}
+# Pairplot
+library(ggplot2)
+ggplot(cancer_data_df, aes(x = F1, y = F2, color = Class)) +
+  geom_point() +
+  facet_grid(. ~ Class)
+```
+
+```{r}
+# Histograms for 'F7', 'F8', 'F9'
+hist(cancer_data_df$F7, col = "red")
+hist(cancer_data_df$F8, col = "red")
+hist(cancer_data_df$F9, col = "red")
+```
+
+```{r}
+# Box plots for 'F7', 'F8', 'F9'
+par(mfrow = c(1, 3))
+boxplot(cancer_data_df$F7, main = "F7")
+boxplot(cancer_data_df$F8, main = "F8")
+boxplot(cancer_data_df$F9, main = "F9")
+par(mfrow = c(1, 1))
+```
+
+```{r}
+# Reloading the CSV
+cancer_data_df_2 <- read.csv('breast-cancer-wisconsin.csv', header = TRUE)
+
+# Checking null data
+cancer_data_df_2[cancer_data_df_2 == "?"] <- NA
+colSums(is.na(cancer_data_df_2))
+
+# Removing null data
+cancer_data_df_2 <- na.omit(cancer_data_df_2)
+colSums(is.na(cancer_data_df_2))
+
+```
+
