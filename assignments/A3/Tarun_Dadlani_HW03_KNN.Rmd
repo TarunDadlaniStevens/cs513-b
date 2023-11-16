@@ -26,14 +26,13 @@ set.seed(123) # for reproducibility
 sample_indices <- sample(nrow(data), 0.7 * nrow(data))
 train_data <- data[sample_indices, ]
 test_data <- data[-sample_indices, ]
-print(na.omit(train_data))
 ```
 
 ```{r}
 # Create a function to train and evaluate KNN models
 knn_model <- function(k, train_data, test_data) {
   # Train the KNN model
-  model <- knn(train_data[, -c(2, 10)], test_data[, -c(2, 10)], train_data$Class, k)
+  model <- knn(train_data[], test_data[], train_data$Class, k)
   
   # Predict on the test data
   predictions <- as.factor(model)

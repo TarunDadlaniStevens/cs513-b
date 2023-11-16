@@ -1,0 +1,79 @@
+---
+title: "Tarun HW04_NB"
+author: "Tarun Dadlani"
+date: "2023-10-17"
+output: pdf_document
+---
+
+
+```{r}
+# checking if required packages are available, if not then installing
+packages = c("e1071", "caret")
+
+## Now load or install&load all
+package.check <- lapply(
+  packages,
+  FUN = function(x) {
+    if (!require(x, character.only = TRUE)) {
+      install.packages(x, dependencies = TRUE)
+      library(x, character.only = TRUE)
+    }
+  }
+)
+```
+
+```{r echo=FALSE}
+# Load required libraries
+# install.packages('e1071', dependencies=TRUE)
+# install.packages('caret', dependencies=TRUE)
+library(e1071)
+library(caret)
+
+# Read the dataset
+cancer_data_df <- read.csv('breast-cancer-wisconsin.csv')
+
+```
+
+```{r}
+# Replace "?" with NA
+cancer_data_df[cancer_data_df == "?"] <- NA
+
+# Remove rows with missing values
+cancer_data_df <- na.omit(cancer_data_df)
+
+# Split the data into predictors (X) and the target variable (y)
+X <- cancer_data_df[, -c(1, 11)]
+y <- cancer_data_df$Class
+```
+
+```{r}
+
+# Split the data into training and test sets (70% training, 30% test)
+set.seed(1)  # For reproducibility
+split <- createDataPartition(y, p = 0.7, list = FALSE)
+X_train <- X[split, ]
+X_test <- X[-split, ]
+y_train <- y[split]
+y_test <- y[-split]
+```
+
+```{r}
+# Train a Gaussian Naive Bayes model
+gnb <- naiveBayes(y_train ~ ., data = data.frame(X_train, y_train))
+
+# Make predictions on the test set
+y_pred <- predict(gnb, newdata = data.frame(X_test))
+```
+
+```{r}
+# Evaluate the model using confusion matrix and accuracy
+conf_matrix <- table(Actual = y_test, Predicted = y_pred)
+accuracy <- sum(diag(conf_matrix)) / sum(conf_matrix)
+
+# Print classification report, confusion matrix, accuracy, and train/test scores
+print("Classification Report:")
+print(conf_matrix)
+print(paste("Accuracy:", accuracy))
+print(paste("Training set score:", mean(predict(gnb, data.frame(X_train)) == y_train)))
+print(paste("Test set score:", mean(predict(gnb, newdata = data.frame(X_test)) == y_test)))
+```
